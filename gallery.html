@@ -4,6 +4,8 @@
 	<title>Gallery</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="A Reestaurant App app">
+	<meta name="theme-color" content="#2F3BA2" />
 <!--===============================================================================================-->
 	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
 <!--===============================================================================================-->
@@ -32,6 +34,7 @@
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 <!--===============================================================================================-->
+<link rel="manifest" href="Manifest.json">
 </head>
 <body class="animsition">
 
@@ -339,7 +342,7 @@
 						var gambar = (response.photos[i].photo.url);
 						
 						tmp =tmp+"<div class='item-gallery isotope-item bo-rad-10 hov-img-zoom events guests'>";
-						tmp =tmp+"<img src='"+gambar+"' alt='IMG-GALLERY' height='400' width='720'>";
+						tmp =tmp+"<img src='"+gambar+"' alt='IMG-GALLERY' height='400' width='100vw'>";
 						tmp =tmp+"</div>";	
 					}
 					tmp =tmp+"</div>"

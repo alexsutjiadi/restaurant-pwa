@@ -5,6 +5,8 @@
 	<title>Order</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="A Reestaurant App app">
+	<meta name="theme-color" content="#2F3BA2" />
 	<!--===============================================================================================-->
 	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
 	<!--===============================================================================================-->
@@ -34,6 +36,7 @@
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<script src="js/push.js"></script>
 	<!--===============================================================================================-->
+	<link rel="manifest" href="Manifest.json">
 </head>
 
 <body class="animsition">
@@ -107,7 +110,7 @@
 	<section class="bg-title-page flex-c-m p-t-160 p-b-80 p-l-15 p-r-15"
 		style="background-image: url(images/bg-title-page-01.jpg);">
 		<h2 class="tit6 t-center">
-			MNH MENU
+			MNH OFFLINE PAGE 
 		</h2>
 	</section>
 
@@ -891,14 +894,6 @@
 	<script src="js/main.js"></script>
 
 	<script>
-		if ('serviceWorker' in navigator) {
-			window.addEventListener('load', () => {
-				navigator.serviceWorker.register('service-worker.js')
-					.then((reg) => {
-						console.log('Service worker registered.', reg);
-					})
-			})
-		};
 		const qtyA = document.querySelector('#qtyA');
 		const qtyB = document.querySelector('#qtyB');
 		const qtyC = document.querySelector('#qtyC');
@@ -951,14 +946,15 @@
 		}
 
 		$("#notifButton").click(function () {
-			Push.create("Hello mehhh", {
-				timeout: 2000,
+			Push.create("Offline Boss", {
+				timeout: 7000,
 				onClick: function () {
 					// ketika notifikasi diklik
 				}
 			});
 
 		});
+
 	</script>
 
 
