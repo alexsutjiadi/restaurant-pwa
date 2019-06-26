@@ -1,4 +1,4 @@
-const FILES_TO_CACHE = [ 'offline.html', ];
+const FILES_TO_CACHE = [ 'offline.html', 'js/main.js', 'js/push.js', 'js/slick-custom.js','js/worker.js', 'css/','fonts/','images/'];
 const CACHE_NAME="namaCache";
 self.addEventListener('activate', (evt) => {
 	evt.waitUntil( 
