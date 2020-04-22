@@ -1,51 +1,286 @@
 <html>
 
 <head>
-    <title>Tes Upload</title>
-    <link rel="stylesheet" type="text/css" href="css.css">
+    <meta charset="utf-8">
+    <title>Wishlist</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+        integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="css.css">
+    <style>
+        body {
+            background-color: #DABFB4;
+        }
+
+        nav {
+            background-color: #DBB5A5;
+            margin-bottom: 30px;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <form method="post" action="" enctype="multipart/form-data" id="myform">
-            <div class='preview'>
-                <img src="" id="img" width="100" height="100">
+    <!-- navbar -->
+    <nav class="navbar navbar-light justify-content-between">
+        <a class="navbar-brand"><h3>Meggy's Wishlist</h3></a>
+        <input type="submit" class="btn btn-primary btnAdd" tabindex="-1" data-target="#mdl-add" data-toggle="modal" value="Add" name="modal"> 
+    </nav>
+
+    <!-- list2 isi -->
+    <table id="1">
+        <tr>
+            <td rowspan="3"><img src="badguy.png"></td>
+            <td>Barang Coba</td>
+        </tr>
+        <tr>
+            <td>20.000</td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" class="btn btn-primary btnEdit" tabindex="-1" data-toggle="modal" data-target="#mdl-edit"
+                    value="Edit" name="modal" data-id='1'>
+                <input type="submit" class="btn btn-danger btnDelete" tabindex="-1" data-toggle="modal" data-target="#mdl-delete"
+                    value="Delete" name="modal" data-id='1'>
+            </td>
+        </tr>
+    </table>
+
+    <table id="2">
+        <tr>
+            <td rowspan="3"><img src="badguy.png"></td>
+            <td>Barang Coba2</td>
+        </tr>
+        <tr>
+            <td>20.000</td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" class="btn btn-primary btnEdit" tabindex="-1" data-toggle="modal" data-target="#mdl-edit"
+                    value="Edit" name="modal" data-id='2'>
+                <input type="submit" class="btn btn-danger btnDelete" tabindex="-1" data-toggle="modal" data-target="#mdl-delete"
+                    value="Delete" name="modal" data-id='2'>
+            </td>
+        </tr>
+    </table>
+
+
+    <!-- modal delete -->
+    <div id="mdl-delete" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Hapus Wishlist</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Meggy yakin mau hapus?</p>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" val="" id="delete" name="delete" value="Delete">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+                </form>
             </div>
-            <div>
-                <input type="file" id="file" name="file" />
-                <input type="button" class="button" value="Upload" id="but_upload">
-            </div>
-        </form>
+        </div>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
 
-            $("#but_upload").click(function () {
-                alert('asd')
-                var fd = new FormData();
-                var files = $('#file')[0].files[0];
-                fd.append('file', files);
+    <!-- modal edit -->
+    <div id="mdl-edit" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-1">
+                        <img src="badguy.png">
+                    </div><br>
 
-                $.ajax({
-                    url: 'upload.php',
-                    type: 'post',
-                    data: fd,
-                    contentType: false,
-                    processData: false,
-                    success: function (response) {
-                        if (response != 0) {
-                            alert('qwe')
-                            $("#img").attr("src", response);
-                            $(".preview img").show(); // Display image element
-                        } else {
-                            alert('file not uploaded');
-                        }
-                    },
-                });
-            });
+                    <div class="col-lg-12">
+                        <label for="editName">Nama</label>
+                        <input type="text" class="editName" name="editName">
+                    </div>
+                    <div class="col-lg-12">
+                        <label for="editPrice">Harga</label>
+                        <input type="number" class="price" name="editPrice">
+                        <select class="currency">
+                            <option>ID Rp</option>
+                            <option>SG $</option>
+                            <option>US $</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" val="" id="edit" name="edit" value="Edit">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal edit -->
+    <div id="mdl-add" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Item</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-12">
+                        <label for="addPicture">
+                            Gambar Barang
+                        </label>
+                        <input type="file" class="addPicture" name="addPicture">
+                    </div><br>
+    
+                    <div class="col-lg-12">
+                        <label for="editName">Nama</label>
+                        <input type="text" class="editName" name="editName">
+                    </div>
+                    <div class="col-lg-12">
+                        <label for="editPrice">Harga</label>
+                        <input type="number" class="price" name="editPrice">
+                        <select class="currency">
+                            <option>ID Rp</option>
+                            <option>SG $</option>
+                            <option>US $</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" val="" id="edit" name="edit" value="Edit">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- <input type="file" id="pictureTest" capture>
+    <button id="uploadButton">Upload</button>
+
+    <h2>Test Image Below</h2>
+    <input type="number" id="recordToLoad"> <button id="testImageBtn">Test</button>
+
+    <img id="testImage"> -->
+
+    <script>
+        let db;
+        let dbVersion = 1;
+        let dbReady = false;
+        let img;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('dom content loaded');
+
+            document.querySelector('#pictureTest').addEventListener('change', refreshImage);
+            document.querySelector('#testImageBtn').addEventListener('click', doImageTest);
+            document.querySelector('#uploadButton').addEventListener('click', doFile);
+
+            initDb();
         });
+
+        function initDb() {
+            let request = indexedDB.open('Data', dbVersion);
+
+            request.onerror = function (e) {
+                console.error('Unable to open database.');
+            }
+
+            request.onsuccess = function (e) {
+                db = e.target.result;
+                console.log('db opened');
+            }
+
+            request.onupgradeneeded = function (e) {
+                let db = e.target.result;
+                db.createObjectStore('cachedForms', { keyPath: 'id' });
+                dbReady = true;
+            }
+        }
+        function refreshImage(e) {
+            console.log('image refresh');
+            img = e.target.files[0]
+            alert(img)
+        }
+
+        function doFile(e) {
+            console.log('change event fired for input field');
+
+            let file = img;
+            var reader = new FileReader();
+            //				reader.readAsDataURL(file);
+            reader.readAsBinaryString(file);
+
+            reader.onload = function (e) {
+                alert(e.target.result);
+                let bits = e.target.result;
+
+                //create obj, isinya mw apa aja disini
+                let ob = {
+                    id: 1,
+                    created: new Date(),
+                    data: bits
+                };
+
+                //transaction, masukin smua ke db
+                let trans = db.transaction(['cachedForms'], 'readwrite');
+                let addReq = trans.objectStore('cachedForms').put(ob);
+
+                addReq.onerror = function (e) {
+                    console.log('error storing data');
+                    console.error(e);
+                }
+
+                trans.oncomplete = function (e) {
+                    console.log('data stored');
+                }
+            }
+        }
+
+        function doImageTest() {
+            console.log('doImageTest');
+            let image = document.querySelector('#testImage');
+            let recordToLoad = parseInt(document.querySelector('#recordToLoad').value, 10);
+            if (recordToLoad === '') recordToLoad = 1;
+
+            let trans = db.transaction(['cachedForms'], 'readonly');
+            //hard coded id
+            let req = trans.objectStore('cachedForms').get(recordToLoad);
+            req.onsuccess = function (e) {
+                let record = e.target.result;
+                console.log('get success', record);
+                if (record == undefined) {
+                    console.log('kosong');
+                } else {
+                    image.src = 'data:image/jpeg;base64,' + btoa(record.data);
+                }
+
+            }
+
+        }
+
     </script>
+
+    
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
+        integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+        crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
+        integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
