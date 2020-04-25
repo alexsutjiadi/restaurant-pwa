@@ -44,6 +44,16 @@ img{
    
 }
 
-body {
-   
+div#status{
+   margin: auto;
+   width: 75%;
+   text-align: center;
+   padding: 10px;
+}
+#alpaca{
+   position: absolute;
+   right: 0%;
+   bottom: 0%;
+   width: 25%;
+   height: auto;
 }
