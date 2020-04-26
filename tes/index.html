@@ -1,14 +1,26 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <title>Wishlist</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
+    <title>Meggy's Wishlist</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A Wishlish App">
+    <meta name="theme-color" content="#FFFFFF" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
         integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link rel="stylesheet" href="css.css">
+    <link rel="manifest" href="Manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then((reg) => {
+                        console.log('Service worker registered.', reg);
+                    })
+            })
+        };
+    </script>
     <style>
         body {
             background-color: #DABFB4;
@@ -31,47 +43,12 @@
             value="Add" name="modal">
     </nav>
     <img src="alpaca.gif" id="alpaca">
-    <!-- list2 isi -->
-    <!-- <table id="1">
-        <tr>
-            <td rowspan="3"><img src="badguy.png"></td>
-            <td>Barang Coba</td>
-        </tr>
-        <tr>
-            <td>20.000</td>
-        </tr>
-        <tr>
-            <td>
-                <input type="submit" class="btn btn-primary btnEdit" tabindex="-1" data-toggle="modal" data-target="#mdl-edit"
-                    value="Edit" name="modal" data-id='1'>
-                <input type="submit" class="btn btn-danger btnDelete" tabindex="-1" data-toggle="modal" data-target="#mdl-delete"
-                    value="Delete" name="modal" data-id='1'>
-            </td>
-        </tr>
-    </table>
-
-    <table id="2">
-        <tr>
-            <td rowspan="3"><img src="badguy.png"></td>
-            <td>Barang Coba2</td>
-        </tr>
-        <tr>
-            <td>20.000</td>
-        </tr>
-        <tr>
-            <td>
-                <input type="submit" class="btn btn-primary btnEdit" tabindex="-1" data-toggle="modal" data-target="#mdl-edit"
-                    value="Edit" name="modal" data-id='2'>
-                <input type="submit" class="btn btn-danger btnDelete" tabindex="-1" data-toggle="modal" data-target="#mdl-delete"
-                    value="Delete" name="modal" data-id='2'>
-            </td>
-        </tr>
-    </table> -->
+    <!-- <button id="btnAdd" style="background-color: #f44336;padding: 15px;color:white;text-align: center;">INSTALL APP</button> -->
     <div id="status"></div>
+    <!-- list2 isi -->
     <div id="list">
 
     </div>
-
     <!-- modal delete -->
     <div id="mdl-delete" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
@@ -86,7 +63,8 @@
                     <p>Meggy yakin mau hapus?</p>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" val="" id="delete" name="delete" value="Delete">
+                    <input type="submit" class="btn btn-primary" onclick="deleteWishlist()" id="delete" name="delete"
+                        value="Delete">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
                 </form>
@@ -106,7 +84,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="col-lg-1">
-                        <img src="badguy.png">
+                        <img id="editImg">
                     </div><br>
 
                     <div class="col-lg-12">
@@ -115,16 +93,16 @@
                     </div>
                     <div class="col-lg-12">
                         <label for="editPrice">Harga</label>
-                        <input type="number" class="price" name="editPrice">
-                        <select class="currency">
-                            <option>ID Rp</option>
-                            <option>SG $</option>
-                            <option>US $</option>
+                        <input type="text" class="editprice" name="editPrice">
+                        <select class="editCurrency">
+                            <option value="IDR">IDR Rp</option>
+                            <option value="SGD">SG $</option>
+                            <option value="USD">US $</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" val="" id="edit" name="edit" value="Edit">
+                    <input type="submit" class="btn btn-primary" onclick="updateWishlist()" id="edit" name="edit" value="Edit">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
                 </form>
@@ -152,11 +130,11 @@
 
                     <div class="col-lg-12">
                         <label for="addName">Nama</label>
-                        <input type="text" class="addName" name="addName">
+                        <input type="text" class="addName" name="addName" placeholder="Isi Nama Barang Disini">
                     </div>
                     <div class="col-lg-12">
                         <label for="addPrice">Harga</label>
-                        <input type="number" class="addPrice" name="addPrice">
+                        <input type="text" class="addPrice" name="addPrice" placeholder="Isi Harga Disini">
                         <select class="addCurrency">
                             <option value="IDR">IDR Rp</option>
                             <option value="SGD">SG $</option>
@@ -180,14 +158,16 @@
         let dbReady = false;
         let img;
         var lastId = 0;
+        var clickedId;
+        var tmpImg; //tmp buat update image
 
         document.addEventListener('DOMContentLoaded', () => {
             console.log('dom content loaded');
 
             document.querySelector('.uploadPicture').addEventListener('change', refreshImage);
             document.querySelector('.addButton').addEventListener('click', addWishlist);
-            document.querySelector('.addPrice').addEventListener('change', formatRupiah)
-
+            document.querySelector('.addPrice').addEventListener('change', formatRupiah);
+            document.querySelector('.editPrice').addEventListener('change', formatRupiah);
             initDb();
         });
 
@@ -215,31 +195,121 @@
             img = e.target.files[0]
             //alert(img)
         }
+        function deleteId(_clickedId) {
+            console.log('delete id');
+            // console.log(clickedId);
+            clickedId = _clickedId;
+        }
 
         function addWishlist(e) {
             console.log('add wishlist');
 
-            let file = img;
-            var reader = new FileReader();
-            //				reader.readAsDataURL(file);
-            reader.readAsBinaryString(file);
+            if (img == undefined) {
+                alert('Isi gambar Wishlisnya dlu Sayang');
+            } else {
+                let file = img;
+                var reader = new FileReader();
+                //				reader.readAsDataURL(file);
+                reader.readAsBinaryString(file);
 
-            reader.onload = function (e) {
-                //alert(e.target.result);
-                let bits = e.target.result;
-                lastId += 1;
-                //console.log('last id:', lastId)
-                let addName = document.querySelector('.addName').value;
-                let addPrice = document.querySelector('.addPrice').value;
-                let addCurrency = document.querySelector('.addCurrency').value;
+                reader.onload = function (e) {
+                    //alert(e.target.result);
+                    let bits = e.target.result;
+                    lastId += 1;
+                    //console.log('last id:', lastId)
+
+                    let addName = document.querySelector('.addName').value;
+                    let addPrice = document.querySelector('.addPrice').value;
+                    let addCurrency = document.querySelector('.addCurrency').value;
+
+                    if (addName == "" || addPrice == "") {
+                        alert('isi detailnya dlu Baby');
+                    } else {
+                        //create obj, isinya mw apa aja disini
+                        let ob = {
+                            id: lastId,
+                            created: new Date(),
+                            picture: bits,
+                            name: addName,
+                            price: addPrice,
+                            currency: addCurrency
+                        };
+
+                        //transaction, masukin smua ke db
+                        let trans = db.transaction(['Data'], 'readwrite');
+                        let addReq = trans.objectStore('Data').put(ob);
+
+                        addReq.onerror = function (e) {
+                            console.log('error storing data');
+                            console.error(e);
+                        }
+
+                        trans.oncomplete = function (e) {
+                            console.log('data stored');
+                            location.reload();
+                        }
+                    }
+
+                }
+            }
+
+        }
+        function deleteWishlist() {
+
+            console.log('delete wishlist');
+            console.log(clickedId);
+            let trans = db.transaction(['Data'], 'readwrite');
+            let addReq = trans.objectStore('Data').delete(clickedId);
+            addReq.onerror = function (e) {
+                console.log('error delete data');
+                console.error(e);
+            }
+
+            trans.oncomplete = function (e) {
+                console.log('data deleted');
+                location.reload();
+            }
+        }
+        function getDataById(id) {
+            console.log('getbyID');
+            clickedId = id;
+            let trans = db.transaction(['Data'], 'readonly');
+            let req = trans.objectStore('Data').get(clickedId);
+            req.onsuccess = function (e) {
+                let record = e.target.result;
+                if (record == undefined) {
+                    console.log('error')
+                } else if (record == "") {
+                    console.log('ID gaada');
+                } else {
+                    // console.log(record);
+                    //isi modal sama data yg di get
+                    document.querySelector("#editImg").src = "data:image/jpeg;base64," + btoa(record.picture);
+                    document.querySelector(".editName").value = record.name;
+                    document.querySelector(".editPrice").value = record.price;
+                    document.querySelector(".editCurrency").value = record.currency;
+                    tmpImg = record.picture;
+                }
+            }
+        }
+        function updateWishlist() {
+            console.log('update wishlist');
+            let editName = document.querySelector('.editName').value;
+            let editPrice = document.querySelector('.editPrice').value;
+            let editCurrency = document.querySelector('.editCurrency').value;
+            let editImg = tmpImg;
+
+            if (editName == "" || editPrice == "") {
+                alert('isi detailnya dlu Baby');
+            } else {
                 //create obj, isinya mw apa aja disini
                 let ob = {
-                    id: lastId,
+                    id: clickedId,
                     created: new Date(),
-                    picture: bits,
-                    name: addName,
-                    price: addPrice,
-                    currency: addCurrency
+                    picture: editImg,
+                    name: editName,
+                    price: editPrice,
+                    currency: editCurrency
                 };
 
                 //transaction, masukin smua ke db
@@ -247,17 +317,17 @@
                 let addReq = trans.objectStore('Data').put(ob);
 
                 addReq.onerror = function (e) {
-                    console.log('error storing data');
+                    console.log('error edit data');
                     console.error(e);
                 }
 
                 trans.oncomplete = function (e) {
-                    console.log('data stored');
+                    console.log('data edited');
                     location.reload();
                 }
             }
-        }
 
+        }
         function getFromDB() {
             // console.log(db);
             console.log('getData');
@@ -266,9 +336,9 @@
             let req = trans.objectStore('Data').getAll();
             req.onsuccess = function (e) {
                 let record = e.target.result;
-                if (record == undefined){
+                if (record == undefined) {
                     console.log('error')
-                }else if (record == "") {
+                } else if (record == "") {
                     console.log('DB kosong');
                     var status = document.querySelector('#status');
                     status.innerHTML = '<h2>Masih kosong Bro...</h2>';
@@ -288,14 +358,13 @@
             let imgData = record.picture;
             let name = record.name;
             let currency = record.currency;
-            let price = currency + " " +record.price;
+            let price = currency + " " + record.price;
             lastId = id;
 
             var list = document.querySelector('#list');
-            list.innerHTML += '<table id=' + id + '>'+'<tr><td rowspan="3"><img src="data:image/jpeg;base64,' + btoa(imgData) + '"></td>'+ '<td>' + name + '</td></tr>'+'<tr><td>' + price + '</td></tr>'+'<tr><td><input type="submit" class="btn btn-primary btnEdit" tabindex="-1" data-toggle="modal" data-target="#mdl-edit" value="Edit" name="modal" data-id="'+id+'"><input type="submit" class="btn btn-danger btnDelete" tabindex="-1" data-toggle="modal" data-target="#mdl-delete" value="Delete" name="modal" data-id="' + id +'"></td></tr>'+'</table>';
-            console.log (list)
+            list.innerHTML += '<table id=' + id + '>' + '<tr><td rowspan="3"><img src="data:image/jpeg;base64,' + btoa(imgData) + '"></td>' + '<td>' + name + '</td></tr>' + '<tr><td>' + price + '</td></tr>' + '<tr><td><input type="submit" class="btn btn-primary btnEdit" tabindex="-1" onclick=getDataById(' + id + ') data-toggle="modal" data-target="#mdl-edit" value="Edit" name="modal" data-id="' + id + '"><input type="submit" class="btn btn-danger btnDelete" tabindex="-1" onclick=deleteId(' + id + ') data-toggle="modal" data-target="#mdl-delete" value="Delete" name="modal" data-id="' + id + '"></td></tr>' + '</table>';
+            // console.log (list)
         }
-
         function formatRupiah(e) {
             var bilangan = e.target.value;
             var number_string = bilangan.replace(/[^,\d]/g, '').toString(),
@@ -308,11 +377,38 @@
                 separator = sisa ? '.' : '';
                 rupiah += separator + ribuan.join('.');
             }
+            rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
             e.target.value = rupiah;
 
         }
     </script>
+    <!-- <script>
+        const btnAdd = document.querySelector('#btnAdd');
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                // Update UI notify the user they can add to home screen
+                btnAdd.style.display = 'block';
+            });
 
+            btnAdd.addEventListener('click', (e) => {
+                // hide our user interface that shows our A2HS button
+                btnAdd.style.display = 'none';
+                // Show the prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                deferredPrompt.userChoice
+                    .then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the A2HS prompt');
+                        } else {
+                            console.log('User dismissed the A2HS prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+            });
+    </script> -->
 
     <!-- Popper.JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"

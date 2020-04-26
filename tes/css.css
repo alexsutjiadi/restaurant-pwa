@@ -57,3 +57,7 @@ div#status{
    width: 25%;
    height: auto;
 }
+label{
+   font-weight: 600;
+   margin: 5px;
+}
