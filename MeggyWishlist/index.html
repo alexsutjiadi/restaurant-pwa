@@ -11,6 +11,7 @@
         integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link rel="stylesheet" href="css.css">
     <link rel="manifest" href="Manifest.json">
+    <link rel="icon" href="love.png" type="image/icon type">
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -42,10 +43,17 @@
         <input type="submit" class="btn btn-primary btnAdd" tabindex="-1" data-target="#mdl-add" data-toggle="modal"
             value="Add" name="modal">
     </nav>
+
+    <!-- gambar alpaca -->
     <img src="alpaca.gif" id="alpaca">
+
+    <!-- install button -->
     <!-- <button id="btnAdd" style="background-color: #f44336;padding: 15px;color:white;text-align: center;">INSTALL APP</button> -->
+
+    <!-- div text kalo lg kosong -->
     <div id="status"></div>
-    <!-- list2 isi -->
+
+    <!-- list2 isi wishlist -->
     <div id="list">
 
     </div>
@@ -102,7 +110,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" onclick="updateWishlist()" id="edit" name="edit" value="Edit">
+                    <input type="submit" class="btn btn-primary" onclick="updateWishlist()" id="edit" name="edit"
+                        value="Edit">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
                 </form>
@@ -124,7 +133,8 @@
                     <div class="col-lg-12">
                         <label for="addPicture">
                             Gambar Barang
-                        </label>
+                        </label><br>
+                        <img id="previewImg"><br>
                         <input type="file" class="uploadPicture" name="uploadPicture">
                     </div><br>
 
@@ -156,9 +166,9 @@
         let db;
         let dbVersion = 1;
         let dbReady = false;
-        let img;
+        let img; // tmp buat simpan img yg mw d add
         var lastId = 0;
-        var clickedId;
+        var clickedId; //simpan yg terakir di click
         var tmpImg; //tmp buat update image
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -190,11 +200,27 @@
                 dbReady = true;
             }
         }
+
+        // refresh img yg di simpan buat add
         function refreshImage(e) {
             console.log('image refresh');
-            img = e.target.files[0]
-            //alert(img)
+            file = e.target.files[0];
+
+            if (file == undefined || file == "") {
+                alert('Isi gambar barangnya dlu Sayang');
+            } else {
+                var reader = new FileReader();
+                reader.readAsBinaryString(file);
+                reader.onload = function (e) {
+                    img = e.target.result;
+                    document.querySelector('#previewImg').src = "data:image/jpeg;base64," + btoa(img);
+                }
+                //alert(img)
+            }
+
         }
+
+        //update clicked id 
         function deleteId(_clickedId) {
             console.log('delete id');
             // console.log(clickedId);
@@ -203,61 +229,42 @@
 
         function addWishlist(e) {
             console.log('add wishlist');
+            let addName = document.querySelector('.addName').value;
+            let addPrice = document.querySelector('.addPrice').value;
+            let addCurrency = document.querySelector('.addCurrency').value;
 
-            if (img == undefined) {
-                alert('Isi gambar Wishlisnya dlu Sayang');
+            if (addName == "" || addPrice == "") {
+                alert('Isi Detailnya Dlu Baby');
             } else {
-                let file = img;
-                var reader = new FileReader();
-                //				reader.readAsDataURL(file);
-                reader.readAsBinaryString(file);
+                //create obj, isinya mw apa aja disini
+                let ob = {
+                    id: lastId,
+                    created: new Date(),
+                    picture: bits,
+                    name: addName,
+                    price: addPrice,
+                    currency: addCurrency
+                };
 
-                reader.onload = function (e) {
-                    //alert(e.target.result);
-                    let bits = e.target.result;
-                    lastId += 1;
-                    //console.log('last id:', lastId)
+                //transaction, masukin smua ke db
+                let trans = db.transaction(['Data'], 'readwrite');
+                let addReq = trans.objectStore('Data').put(ob);
 
-                    let addName = document.querySelector('.addName').value;
-                    let addPrice = document.querySelector('.addPrice').value;
-                    let addCurrency = document.querySelector('.addCurrency').value;
+                addReq.onerror = function (e) {
+                    console.log('error storing data');
+                    console.error(e);
+                }
 
-                    if (addName == "" || addPrice == "") {
-                        alert('isi detailnya dlu Baby');
-                    } else {
-                        //create obj, isinya mw apa aja disini
-                        let ob = {
-                            id: lastId,
-                            created: new Date(),
-                            picture: bits,
-                            name: addName,
-                            price: addPrice,
-                            currency: addCurrency
-                        };
-
-                        //transaction, masukin smua ke db
-                        let trans = db.transaction(['Data'], 'readwrite');
-                        let addReq = trans.objectStore('Data').put(ob);
-
-                        addReq.onerror = function (e) {
-                            console.log('error storing data');
-                            console.error(e);
-                        }
-
-                        trans.oncomplete = function (e) {
-                            console.log('data stored');
-                            location.reload();
-                        }
-                    }
-
+                trans.oncomplete = function (e) {
+                    console.log('data stored');
+                    location.reload();
                 }
             }
-
         }
         function deleteWishlist() {
 
             console.log('delete wishlist');
-            console.log(clickedId);
+            // console.log(clickedId);
             let trans = db.transaction(['Data'], 'readwrite');
             let addReq = trans.objectStore('Data').delete(clickedId);
             addReq.onerror = function (e) {
@@ -292,6 +299,7 @@
                 }
             }
         }
+
         function updateWishlist() {
             console.log('update wishlist');
             let editName = document.querySelector('.editName').value;
@@ -300,7 +308,7 @@
             let editImg = tmpImg;
 
             if (editName == "" || editPrice == "") {
-                alert('isi detailnya dlu Baby');
+                alert('Isi Detailnya Dlu Baby');
             } else {
                 //create obj, isinya mw apa aja disini
                 let ob = {
@@ -352,6 +360,7 @@
             }
         }
 
+        // tampilin wishlist
         function showList(record, index) {
             console.log("show list");
             let id = record.id;
