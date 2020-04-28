@@ -63,7 +63,7 @@ label{
    margin: 5px;
 }
 #btnInstall{
-   position: fixed;
+   position: absolute;
    left: 0%;
    bottom: 0%;
    width: 25%;
