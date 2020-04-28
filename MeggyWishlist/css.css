@@ -46,13 +46,12 @@ img{
 
 div#status{
    margin: auto;
-   margin-top: 60px;
    width: 75%;
    text-align: center;
    padding: 10px;
 }
 #alpaca{
-   position: fixed;
+   position: absolute;
    right: 0%;
    bottom: 0%;
    width: 25%;
