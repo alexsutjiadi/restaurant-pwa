@@ -27,7 +27,10 @@
             background-color: #DABFB4;
         }
 
-        nav {
+        .navbar {
+            position: fixed;
+            top:0;
+            width: 100%;
             background-color: #DBB5A5;
             margin-bottom: 30px;
         }
@@ -153,8 +156,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="addButton btn btn-primary" name="addButton" value="Add"
-                        data-dismiss="modal">
+                    <input type="submit" class="addButton btn btn-primary" name="addButton" data-dismiss="modal" value="Add">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
                 </form>
@@ -227,8 +229,10 @@
             clickedId = _clickedId;
         }
 
-        function addWishlist(e) {
+        function addWishlist() {
             console.log('add wishlist');
+            lastId += 1;
+
             let addName = document.querySelector('.addName').value;
             let addPrice = document.querySelector('.addPrice').value;
             let addCurrency = document.querySelector('.addCurrency').value;
@@ -240,7 +244,7 @@
                 let ob = {
                     id: lastId,
                     created: new Date(),
-                    picture: bits,
+                    picture: img,
                     name: addName,
                     price: addPrice,
                     currency: addCurrency
