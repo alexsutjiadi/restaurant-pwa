@@ -1,0 +1,50 @@
+<html>
+
+<head>
+    <title>Calc</title>
+</head>
+
+<body>
+    <div id="priceGainLossToPercent" style="border: solid;margin-bottom: 20px;">
+        <input type="text" id="from" placeholder="from">
+        <input type="text" id="to" placeholder="to">
+        <input type="text" id="gainLossPercentResult" disabled><br>
+        <input type="button" id="ok" onclick="calcPercent()" value="calc">
+    </div>
+    <div id="newAvgPrice" style="border: solid;">
+        <input type="text" id="avgPriceNow" placeholder="AVG Price">
+        <input type="text" id="numOfShareNow" placeholder="Number of Shares"><br>
+        <input type="text" id="addedPrice" placeholder="Added Price">
+        <input type="text" id="numOfShareAdded" placeholder="Added Number of Shares"><br>
+        <input type="text" id="newAVGResult" placeholder="Result" disabled>
+        <input type="button" id="calcNewAvg" value="Calc" onclick="calcNewAvg()">
+    </div>
+</body>
+<script type="text/javascript">
+    //func to calculate gain/loss to percent
+    function calcPercent() {
+        //get val from input
+        let from = parseFloat(document.getElementById("from").value);
+        let to = parseFloat(document.getElementById("to").value);
+
+        //calc result
+        let res = ((to - from) / from) * 100;
+        //show result to textbox
+        document.getElementById("gainLossPercentResult").value = res + ("%");
+    }
+
+    //function to calc new avg of price
+    function calcNewAvg() {
+        //get val from input
+        let avgNow = parseFloat(document.getElementById("avgPriceNow").value);
+        let numNow = parseFloat(document.getElementById("numOfShareNow").value);
+        let addedPrice = parseFloat(document.getElementById("addedPrice").value);
+        let numAdded = parseFloat(document.getElementById("numOfShareAdded").value);
+
+        //calc result
+        let res = ((avgNow*numNow) + (addedPrice*numAdded))/(numNow+numAdded);
+        document.getElementById("newAVGResult").value = ""+res;
+    }
+</script>
+
+</html>
